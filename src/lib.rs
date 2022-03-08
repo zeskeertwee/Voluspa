@@ -24,9 +24,11 @@ pub fn start_kernel(boot_info: &'static BootInfo) -> ! {
 
     for (i, entry) in l4_table.iter().enumerate() {
         if !entry.is_unused() {
-            println!("L4 page table entry {}: {:?}", i, entry);
+            serial_println!("L4 page table entry {}: {:?}", i, entry);
         }
     }
+
+    println!("Hello World from Voluspa!");
 
     hlt_loop()
 }
