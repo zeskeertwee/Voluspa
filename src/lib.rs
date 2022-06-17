@@ -10,6 +10,7 @@ pub mod memory;
 pub mod serial;
 pub mod tests;
 pub mod vga;
+pub mod bga;
 
 use bootloader::{entry_point, BootInfo};
 pub use tests::runner::runner;
@@ -29,6 +30,11 @@ pub fn start_kernel(boot_info: &'static BootInfo) -> ! {
     }
 
     println!("Hello World from Voluspa!");
+
+    let mut bga_controller = bga::BgaController::init();
+    bga_controller.set_res(1024, 768, 0x20);
+    bga_controller.write_gibberish();
+    //bga_controller.clear_screen(Pixel::new(255, 255, 255));
 
     hlt_loop()
 }
@@ -56,8 +62,9 @@ pub fn init() {
 use crate::memory::active_level_4_page_table;
 use core::panic::PanicInfo;
 use x86_64::VirtAddr;
+use crate::bga::Pixel;
 
-pub fn panic_handler(info: &PanicInfo) -> ! {
+pub fn vga_panic_handler(info: &PanicInfo) -> ! {
     use vga::{Color, ColorCode, VgaChar, WRITER};
 
     // clear the screen with a blue background
@@ -76,6 +83,13 @@ pub fn panic_handler(info: &PanicInfo) -> ! {
     println!("{}", info);
 
     hlt_loop()
+}
+
+pub fn serial_panic_handler(info: &PanicInfo) -> ! {
+    serial_println!("\n\n\n-- VOLUSPA KERNEL PANIC --");
+    serial_println!("{}", info);
+
+    hlt_loop();
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {

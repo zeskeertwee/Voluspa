@@ -28,7 +28,7 @@ fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    voluspa_kernel::panic_handler(info);
+    voluspa_kernel::serial_panic_handler(info);
 }
 
 #[cfg(test)]
